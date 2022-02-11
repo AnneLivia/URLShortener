@@ -5,11 +5,13 @@ const shotenerController = new ShotenerController();
 
 const router = Router();
 
-router.get('/shortener', shotenerController.index);
-router.get('/shortener/:id', shotenerController.getOne)
-router.post('/shortener', shotenerController.store)
-router.put('/shortener/:id', shotenerController.update)
-router.delete('/shortener/:id', shotenerController.remove)
+router.get('/:hash', shotenerController.redirect);
+router.get('/api/shortener', shotenerController.index);
+router.get('/api/shortener/:id', shotenerController.getOne)
+router.post('/api/shortener', shotenerController.store)
+router.put('/api/shortener/:id', shotenerController.update)
+router.delete('/api/shortener/:id', shotenerController.remove)
+
 
 
 export default router;

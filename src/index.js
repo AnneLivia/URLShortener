@@ -30,7 +30,7 @@ app.use(morgan('dev'));
 // It is a piece of code that comes in the middle of request and response. 
 // It kind of hijacks your request so that you can do anything that you want with your request or response 
 app.use('/api', userRouter);
-app.use('/api', shortenerRouter);
+app.use(shortenerRouter);
 
 app.listen(PORT, () => {
     console.log(`Server started at port ${PORT}`);
