@@ -3,10 +3,10 @@ import {Router} from 'express';
 
 const router = Router();
 
-router.get('/user', userController.index);
-router.get('/user/:id', userController.getOne);
-router.post('/user', userController.store);
-router.delete('/user/:id', userController.remove);
-router.put('/user/:id', userController.update);
+router.get('/users', userController.index);
+router.get('/users/:id', userController.getOne);
+router.post('/users', userController.store);
+router.delete('/users/:id', userController.remove);
+router.put('/users/:id', userController.update);
 
 export default router;

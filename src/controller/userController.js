@@ -1,66 +1,84 @@
-import {users} from '../models/userModel.js';
-import crypto from 'crypto';
+import UserModel from "../models/userModel.js";
 
 const controller = {
-    index: (req, res) => {
-        res.json({users});
-    },
+  index: async (req, res) => {
+    const users = await UserModel.find().lean();
+    res.json({users});
+  },
 
-    getOne: (req, res) => {
-        const id = req.params.id;
-        const user = users.find(user => id === user.id);
-        if(user) {
-            return res.status(200).json({user});
-        }
-
-        res.status(404).json({message: "User not found!"});
-    },
-
-    store: (req, res) => {
-        const {email, name} = req.body;
-
-        const user = {
-            id: crypto.randomUUID(),
-            name,
-            email
-        };
-
-        users.push(user);
-
-        res.json({user});
-    },
-
-    update: (req, res) => {
-        const id = req.params.id;
-
-        const user = users.find(user => user.id === id);
+  getOne: async (req, res) => {
+    const {id} = req.params;
+    try {
+        const user = await UserModel.findById(id);
 
         if (user) {
-            const {name, email} = req.body;
-            
-            user.name = name || user.name;
-            user.email = email || user.email;
-
-           return res.json({user});
+            return res.json({user});
         }
 
         res.status(404).json({message: "User not found!"});
-    },
 
-    remove: (req, res) => {
-        const id = req.params.id;
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({message: "Unexpected error!"});
+    }
+  },
 
-        const index = users.findIndex(user => user.id == id);
+  store: async (req, res) => {
+    const {name, email, password, phones} = req.body;
 
-        if (index !== -1) {
+    try {
+        const user = await UserModel.create( {
+            name, 
+            email, 
+            password,
+            phones
+        } )
 
-            const user_deleted = users.splice(index, 1);
+        user.password = undefined; // to hide the password
+        res.json({user})
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({message: "Unexpected error!"});
+    }
 
-            return res.json({message: "User deleted successfully.", user_deleted})
+  },
+
+  update: async (req, res) => {
+    const {id} = req.params;
+    try {  
+        const {email, password, phones, name, role} = req.body;
+        const user = await UserModel.findByIdAndUpdate(id, 
+            {email, name, password, phones, role}, 
+            {new: true, runValidators: true }
+        );
+        if (user) {
+            return res.json({user});
         }
 
         res.status(404).json({message: "User not found!"});
-    },
-}
+
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({message: "Unexpected error!"});
+    }
+  },
+
+  remove: async (req, res) => {
+    const id = req.params.id;
+    try {
+        const user = await UserModel.findByIdAndDelete(id);
+
+        if (user) 
+            return res.json({message: "User was removed!", user: user.email});
+
+        res.status(404).json({message: "User not found!"});
+
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({message: "Unexpected error!"});
+    }
+  },
+  
+};
 
 export default controller;

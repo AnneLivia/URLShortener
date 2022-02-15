@@ -13,12 +13,6 @@ const app = express();
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
-const DATABASE_URL = process.env.DATABASE_URL;
-
-// connecting to mongo db
-mongoose.connect(DATABASE_URL)
-.then( () => console.log("MongoDB connected."))
-.catch( (err) => console.error(err) );
 
 // Middleware to allow receive json from body
 app.use(express.json());

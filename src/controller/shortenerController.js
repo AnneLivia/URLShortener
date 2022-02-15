@@ -1,7 +1,7 @@
 import ShortenerModel from '../models/ShortenerModel.js';
 import crypto from 'crypto';
 import userAgent from 'user-agent';
-
+import geoIp from 'geoip-lite';
 export default class Controller {
     async index(req, res) {
         const shorteners = await ShortenerModel.find().lean();
@@ -104,12 +104,14 @@ export default class Controller {
                     return res.json({message: "Shortener expired!"});
                 }
                 const userAgentDetail = userAgent.parse(req.headers['user-agent'])
-                
+                // this geoip-lite is going to provide many geo data using ip
+                // const geo = geoIp.lookup(req.headers['x-forwarded-for']); 
                 const metadata = {
                     ip: req.ip,
                     userAgent: req.headers['user-agent'],
                     language: req.headers['accept-language'],
                     userAgentDetail,
+                    // geo,
                 }  
 
                 shortener.hits++;
