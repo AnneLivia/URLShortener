@@ -1,10 +1,11 @@
 import ShortenerModel from '../models/ShortenerModel.js';
 import crypto from 'crypto';
 import userAgent from 'user-agent';
-import geoIp from 'geoip-lite';
+// import geoIp from 'geoip-lite';
+
 export default class Controller {
     async index(req, res) {
-        const shorteners = await ShortenerModel.find().lean();
+        const shorteners = await ShortenerModel.find({user: req.loggedUser._id}).lean();
         res.json({shorteners});
     }
 
@@ -12,7 +13,7 @@ export default class Controller {
         const {id} = req.params;
 
         try {
-            const shortener = await ShortenerModel.findById(id);
+            const shortener = await ShortenerModel.findOne({_id: id, user: req.loggedUser._id});
 
             if (shortener) {
                 return res.json({shortener});
@@ -35,7 +36,7 @@ export default class Controller {
 
         const [hash] = crypto.randomUUID().split('-');
 
-        const shortener = await ShortenerModel.create( {hash, link, expiredDate, name} );
+        const shortener = await ShortenerModel.create( {user: req.loggedUser._id, hash, link, expiredDate, name} );
 
         res.json({shortener});
     }
@@ -46,7 +47,7 @@ export default class Controller {
         const {link, name, expiredDate} = req.body;
 
         try {
-            const shortener = await ShortenerModel.findByIdAndUpdate(id, {
+            const shortener = await ShortenerModel.findOneAndUpdate({_id: id, user: req.loggedUser._id}, {
                 link, name, expiredDate,
             }, {new: true});
 
@@ -70,7 +71,7 @@ export default class Controller {
         const {id} = req.params;
 
         try {
-            const shortener = await ShortenerModel.findById(id);
+            const shortener = await ShortenerModel.findOne({_id: id, user: req.loggedUser._id});
 
             if (shortener) {
                 await shortener.remove();

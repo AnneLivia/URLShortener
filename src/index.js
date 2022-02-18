@@ -1,10 +1,13 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
-import mongoose from 'mongoose';
+import db from './database/db.js';
+
+import { authMiddleware } from './middlewares/auth.middleware.js';
 
 import userRouter  from './routes/userRouter.js';
 import shortenerRouter from './routes/shortenerRouter.js';
+
 
 const app = express();
 
@@ -18,6 +21,9 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 // HTTP request logger middleware for node.js
 app.use(morgan('dev'));
+
+// authorization middleware 
+app.use(authMiddleware);
 
 // Routing defines the way in which the client requests are handled by the application endpoints.
 // And when you make some routers in separate file, you can use them by using middleware.
