@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
-import db from './database/db.js';
+import mongoose from 'mongoose';
 
 import { authMiddleware } from './middlewares/auth.middleware.js';
 
@@ -9,13 +9,25 @@ import userRouter  from './routes/userRouter.js';
 import shortenerRouter from './routes/shortenerRouter.js';
 
 
-const app = express();
-
 // The dotenv is a zero-dependency module that loads environment variables from a . env file into process. env 
 // this must come before getting variables data, otherwise it get undefined
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
+const DATABASE_URL = process.env.DATABASE_URL;
+
+// connecting to mongo db
+/*
+    The connection to the database must be in the main project file, 
+    the file that NodeJs is going to execute. The connection with mongodb will only be made once.
+    when execute "node index.js" the connection will be initiated only once
+    and will remain connected, until the process is finished or an error occurs
+*/
+mongoose.connect(DATABASE_URL)
+.then( () => console.log("MongoDB connected!"))
+.catch((err) => console.error(err));
+
+const app = express();
 
 // Middleware to allow receive json from body
 app.use(express.json());
