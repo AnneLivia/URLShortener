@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
+import helmet from 'helmet';
 
 import { authMiddleware } from './middlewares/auth.middleware.js';
 
@@ -33,6 +34,11 @@ const app = express();
 app.use(express.json());
 // HTTP request logger middleware for node.js
 app.use(morgan('dev'));
+
+// Helmet helps to secure Express apps by setting various HTTP headers
+// helmet.hidePoweredBy removes the X-Powered-By header
+// app.disable("x-powered-by") does the same thing.
+app.use(helmet.hidePoweredBy());
 
 // authorization middleware 
 app.use(authMiddleware);
