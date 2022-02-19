@@ -8,7 +8,8 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export const authMiddleware = (req, res, next) => {
     
     // se login ou cadastro, pass
-    if (req.url === '/api/login' || (req.url === '/api/users' && req.method == 'POST'))
+    // !req.url.includes('api') = to redirect to link
+    if (req.url === '/api/login' || (req.url === '/api/users' && req.method == 'POST') || !req.url.includes('api'))
         return next();
 
     const {authorization} = req.headers;
