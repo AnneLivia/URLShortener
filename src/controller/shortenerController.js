@@ -36,9 +36,17 @@ export default class Controller {
 
         const [hash] = crypto.randomUUID().split('-');
 
-        const shortener = await ShortenerModel.create( {user: req.loggedUser._id, hash, link, expiredDate, name} );
+        try {
 
-        res.json({shortener});
+            const shortener = await ShortenerModel.create( {user: req.loggedUser._id, hash, link, expiredDate, name} );
+
+            res.json({shortener});
+
+        } catch (err) {
+            console.error(err.message);
+
+            res.status(400).json({message: "Unexpected error!"});
+        }
     }
 
     async update(req, res) {
