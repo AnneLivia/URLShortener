@@ -136,10 +136,10 @@ class Controller {
       return res.status(403).json({message: "You are not allowed to delete this user"});
 
     try {
-      const user = await UserModel.findByIdAndDelete(id);
+      const user = await UserModel.deleteOne({_id : id });
 
       if (user)
-        return res.json({ message: "User was removed!", user: user.email });
+        return res.json({ message: "User was removed!", user/*user: user.email // o deleteOne retorna boolean e não o objeto*/ });
 
       res.status(404).json({ message: "User not found!" });
     } catch (err) {

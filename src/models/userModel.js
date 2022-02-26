@@ -38,6 +38,20 @@ userSchema.pre('save', async function (next) {
   next();
 });*/
 
+// mongo middleware that removes all documents from a specific user, when this user is deleted
+userSchema.post("deleteOne", async function(next) {
+  // 'this' referesents the query used inside the deleteOne method 
+  // calling deleteOne does not return the _id, in order to get it, i need to use getFilter()["_id"], 
+  // _id was passed in the query .deleteOne({_id : id }). So I can get it. getFilter = returns what I passed to the query
+  const user = this.getFilter()['_id'];
+  try {
+    await mongoose.model('shortener').deleteMany({user}, next);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
 const UserModel = mongoose.model("users", userSchema);
 
 export default UserModel;
